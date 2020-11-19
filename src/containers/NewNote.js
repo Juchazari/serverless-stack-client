@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { onError } from "../libs/errorLib";
-import config from "../config";
+import { config } from "../config";
 import { API } from "aws-amplify";
 import { s3Upload } from "../libs/awsLib";
 import "./NewNote.css";

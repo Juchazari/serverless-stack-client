@@ -5,7 +5,7 @@ import { s3Upload } from "../libs/awsLib";
 import { onError } from "../libs/errorLib";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
-import config from "../config";
+import { config } from "../config";
 import "./Notes.css";
 
 export default function Notes() {
