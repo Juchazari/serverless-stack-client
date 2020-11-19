@@ -1,11 +1,11 @@
 import React, { useRef, useState } from "react";
+import { API } from "aws-amplify";
+import Form from "react-bootstrap/Form";
 import { useHistory } from "react-router-dom";
-import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import { onError } from "../libs/errorLib";
-import { config } from "../config";
-import { API } from "aws-amplify";
 import { s3Upload } from "../libs/awsLib";
+import config from "../config";
 import "./NewNote.css";
 
 export default function NewNote() {
@@ -24,7 +24,7 @@ export default function NewNote() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-  
+
     if (file.current && file.current.size > config.MAX_ATTACHMENT_SIZE) {
       alert(
         `Please pick a file smaller than ${
@@ -33,12 +33,12 @@ export default function NewNote() {
       );
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     try {
       const attachment = file.current ? await s3Upload(file.current) : null;
-  
+
       await createNote({ content, attachment });
       history.push("/");
     } catch (e) {
@@ -46,8 +46,7 @@ export default function NewNote() {
       setIsLoading(false);
     }
   }
-  
-  
+
   function createNote(note) {
     return API.post("notes", "/notes", {
       body: note
@@ -56,29 +55,29 @@ export default function NewNote() {
 
   return (
     <div className="NewNote">
-      <form onSubmit={handleSubmit}>
-        <FormGroup controlId="content">
-          <FormControl
+      <Form onSubmit={handleSubmit}>
+        <Form.Group controlId="content">
+          <Form.Control
             value={content}
-            componentClass="textarea"
-            onChange={e => setContent(e.target.value)}
+            as="textarea"
+            onChange={(e) => setContent(e.target.value)}
           />
-        </FormGroup>
-        <FormGroup controlId="file">
-          <ControlLabel>Attachment</ControlLabel>
-          <FormControl onChange={handleFileChange} type="file" />
-        </FormGroup>
+        </Form.Group>
+        <Form.Group controlId="file">
+          <Form.Label>Attachment</Form.Label>
+          <Form.Control onChange={handleFileChange} type="file" />
+        </Form.Group>
         <LoaderButton
           block
           type="submit"
-          bsSize="large"
-          bsStyle="primary"
+          size="lg"
+          variant="primary"
           isLoading={isLoading}
           disabled={!validateForm()}
         >
           Create
         </LoaderButton>
-      </form>
+      </Form>
     </div>
   );
 }

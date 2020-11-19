@@ -1,4 +1,4 @@
-export const config = {
+const config = {
   STRIPE_KEY: "pk_test_Ut3V8JGOlqqtGTJVHrRJzXtW00g8WufwRK",
   MAX_ATTACHMENT_SIZE: 5000000,
   s3: {
@@ -16,3 +16,5 @@ export const config = {
     IDENTITY_POOL_ID: "us-east-1:bcbd16bb-81c5-4b99-a8bb-c6575e3052c7"
   }
 };
+
+export default config;

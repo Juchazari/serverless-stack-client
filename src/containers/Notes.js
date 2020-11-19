@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useParams, useHistory } from "react-router-dom";
+import Form from "react-bootstrap/Form";
 import { API, Storage } from "aws-amplify";
-import { s3Upload } from "../libs/awsLib";
-import { onError } from "../libs/errorLib";
-import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import { useParams, useHistory } from "react-router-dom";
 import LoaderButton from "../components/LoaderButton";
-import { config } from "../config";
+import { onError } from "../libs/errorLib";
+import { s3Upload } from "../libs/awsLib";
+import config from "../config";
 import "./Notes.css";
 
 export default function Notes() {
@@ -44,26 +44,26 @@ export default function Notes() {
   function validateForm() {
     return content.length > 0;
   }
-  
+
   function formatFilename(str) {
     return str.replace(/^\w+-/, "");
   }
-  
+
   function handleFileChange(event) {
     file.current = event.target.files[0];
   }
-  
+
   function saveNote(note) {
     return API.put("notes", `/notes/${id}`, {
       body: note
     });
   }
-  
+
   async function handleSubmit(event) {
     let attachment;
-  
+
     event.preventDefault();
-  
+
     if (file.current && file.current.size > config.MAX_ATTACHMENT_SIZE) {
       alert(
         `Please pick a file smaller than ${
@@ -72,14 +72,14 @@ export default function Notes() {
       );
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     try {
       if (file.current) {
         attachment = await s3Upload(file.current);
       }
-  
+
       await saveNote({
         content,
         attachment: attachment || note.attachment
@@ -90,24 +90,24 @@ export default function Notes() {
       setIsLoading(false);
     }
   }
-  
+
   function deleteNote() {
     return API.del("notes", `/notes/${id}`);
   }
-  
+
   async function handleDelete(event) {
     event.preventDefault();
-  
+
     const confirmed = window.confirm(
       "Are you sure you want to delete this note?"
     );
-  
+
     if (!confirmed) {
       return;
     }
-  
+
     setIsDeleting(true);
-  
+
     try {
       await deleteNote();
       history.push("/");
@@ -116,22 +116,22 @@ export default function Notes() {
       setIsDeleting(false);
     }
   }
-  
+
   return (
     <div className="Notes">
       {note && (
-        <form onSubmit={handleSubmit}>
-          <FormGroup controlId="content">
-            <FormControl
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="content">
+            <Form.Control
+              as="textarea"
               value={content}
-              componentClass="textarea"
-              onChange={e => setContent(e.target.value)}
+              onChange={(e) => setContent(e.target.value)}
             />
-          </FormGroup>
-          {note.attachment && (
-            <FormGroup>
-              <ControlLabel>Attachment</ControlLabel>
-              <FormControl.Static>
+          </Form.Group>
+          <Form.Group controlId="file">
+            <Form.Label>Attachment</Form.Label>
+            {note.attachment && (
+              <p>
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
@@ -139,18 +139,14 @@ export default function Notes() {
                 >
                   {formatFilename(note.attachment)}
                 </a>
-              </FormControl.Static>
-            </FormGroup>
-          )}
-          <FormGroup controlId="file">
-            {!note.attachment && <ControlLabel>Attachment</ControlLabel>}
-            <FormControl onChange={handleFileChange} type="file" />
-          </FormGroup>
+              </p>
+            )}
+            <Form.Control onChange={handleFileChange} type="file" />
+          </Form.Group>
           <LoaderButton
             block
+            size="lg"
             type="submit"
-            bsSize="large"
-            bsStyle="primary"
             isLoading={isLoading}
             disabled={!validateForm()}
           >
@@ -158,14 +154,14 @@ export default function Notes() {
           </LoaderButton>
           <LoaderButton
             block
-            bsSize="large"
-            bsStyle="danger"
+            size="lg"
+            variant="danger"
             onClick={handleDelete}
             isLoading={isDeleting}
           >
             Delete
           </LoaderButton>
-        </form>
+        </Form>
       )}
     </div>
   );
